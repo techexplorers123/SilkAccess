@@ -23,7 +23,7 @@ jobs:
         VERSION=${GITHUB_REF_NAME}
         cp "bin/Release/netstandard2.1/Silk Access.dll" "bin/Release/netstandard2.1/Silk -access-$version.dll"
 
-      - name: Create Release & Upload APK
+      - name: Create Release & Upload dll
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
