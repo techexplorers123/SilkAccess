@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-namespace MyFirstPlugin
+namespace SilkAccess
 {
     [BepInPlugin("org.tech.silkaccess", "silk access", "1.0.0")]
     public class Plugin : BaseUnityPlugin
