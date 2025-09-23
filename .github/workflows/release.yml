@@ -22,7 +22,7 @@ jobs:
 
     - name: Build
       run: |
-        dotnet build --no-restore
+        dotnet build --no-restore -c release
         VERSION=${GITHUB_REF_NAME}
         cp "bin/Release/netstandard2.1/Silk Access.dll" "bin/Release/netstandard2.1/Silk-Access-$VERSION.dll"
 
