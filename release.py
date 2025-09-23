@@ -8,15 +8,15 @@ if len(sys.argv) < 2:
 version = sys.argv[1]
 
 # Update Pluging.cs
-with open('Pluging.cs') as f:
+with open('Plugin.cs') as f:
     data = f.read()
 
 data = re.sub(r'(\[BepInPlugin\(.*?\,\s.*?\")([\d\.]+)(\"\)\])', rf'\1{version}\3', data)
-with open('Pluging.cs', 'w') as f:
+with open('Plugin.cs', 'w') as f:
     f.write(data)
 
 # Commit, tag, push
-subprocess.run(f'git add Pluging.cs && git commit -m "Bump version to {version}"', shell=True, check=True)
+subprocess.run(f'git add Plugin.cs && git commit -m "Bump version to {version}"', shell=True, check=True)
 subprocess.run(f'git tag -a v{version} -m "Release v{version}"', shell=True, check=True)
 subprocess.run(f'git push origin HEAD && git push origin v{version}', shell=True, check=True)
 
