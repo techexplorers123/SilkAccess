@@ -11,7 +11,7 @@ version = sys.argv[1]
 with open('Plugin.cs') as f:
     data = f.read()
 
-data = re.sub(r'(\[BepInPlugin\(.*?\,\s.*?\")([\d\.]+)(\"\)\])', rf'\1{version}\3', data)
+data = re.sub(r'(\[BepInPlugin\(.*?)(\"[\d\.]+\")(\)\])', rf'\1"{version}"\3', data)
 with open('Plugin.cs', 'w') as f:
     f.write(data)
 
