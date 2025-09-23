@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace SilkAccess
 {
-    [BepInPlugin("org.tech.silkaccess", "silk access", \"1.0.0\")]
+    [BepInPlugin("org.tech.silkaccess", "silk access", "1.0.1")]
     public class Plugin : BaseUnityPlugin
     {
         internal static new ManualLogSource Logger;
