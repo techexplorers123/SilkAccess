@@ -18,3 +18,4 @@ jobs:
               with:
                   token: ${{ secrets.RELEASE_PAT}}
                   release-type: simple
+                  release-as: 0.1.0
