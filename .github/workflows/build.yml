@@ -38,6 +38,7 @@ jobs:
                   cp README.md package/
                   # Optional
                   cp LICENSE package/
+                  cp nvdaControllerClient.dll package/
                   cd package
                   zip -r "../Silk-Access-${VERSION}.zip" .
             - name: Upload release assets
