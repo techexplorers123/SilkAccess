@@ -55,7 +55,7 @@ namespace SilkAccess.Features
             MenuButton menuButton = element.GetComponentInParent<MenuButton>();
             if (menuButton != null)
             {
-                return $"Button: {GetLabel(menuButton.gameObject)}. {GetAvailability(menuButton)}";
+                return $"{GetLabel(menuButton.gameObject)}";
             }
 
             Selectable selectable = element.GetComponentInParent<Selectable>();
@@ -69,53 +69,53 @@ namespace SilkAccess.Features
             Toggle toggle = selectable.GetComponent<Toggle>();
             if (toggle != null)
             {
-                return $"Toggle: {GetLabel(toggle.gameObject)}. {(toggle.isOn ? "On" : "Off")}. {availability}";
+                return $"{GetLabel(toggle.gameObject)} switch {(toggle.isOn ? "On" : "Off")}";
             }
 
             Slider slider = selectable.GetComponent<Slider>();
             if (slider != null)
             {
-                return $"Slider: {GetLabel(slider.gameObject)}. {slider.value:0.##}. {availability}";
+                return $"{GetLabel(slider.gameObject)} slider {slider.value:0.##}";
             }
 
             Dropdown dropdown = selectable.GetComponent<Dropdown>();
             if (dropdown != null)
             {
-                return $"Dropdown: {GetLabel(dropdown.gameObject)}. {GetSelectedOption(dropdown.options, dropdown.value)}. {availability}";
+                return $"{GetLabel(dropdown.gameObject)}. Dropdown {GetSelectedOption(dropdown.options, dropdown.value)}";
             }
 
             TMP_Dropdown tmpDropdown = selectable.GetComponent<TMP_Dropdown>();
             if (tmpDropdown != null)
             {
-                return $"Dropdown: {GetLabel(tmpDropdown.gameObject)}. {GetSelectedOption(tmpDropdown.options, tmpDropdown.value)}. {availability}";
+                return $"Dropdown: {GetLabel(tmpDropdown.gameObject)}. {GetSelectedOption(tmpDropdown.options, tmpDropdown.value)}";
             }
 
             InputField inputField = selectable.GetComponent<InputField>();
             if (inputField != null)
             {
-                return $"Input field: {GetInputLabel(inputField.placeholder, inputField.gameObject)}. {inputField.text}. {availability}";
+                return $"{GetInputLabel(inputField.placeholder, inputField.gameObject)}. editable, has value: {inputField.text}";
             }
 
             TMP_InputField tmpInputField = selectable.GetComponent<TMP_InputField>();
             if (tmpInputField != null)
             {
-                return $"Input field: {GetInputLabel(tmpInputField.placeholder, tmpInputField.gameObject)}. {tmpInputField.text}. {availability}";
+                return $"{GetInputLabel(tmpInputField.placeholder, tmpInputField.gameObject)}. editable has value: {tmpInputField.text}";
             }
 
             Button button = selectable.GetComponent<Button>();
             if (button != null)
             {
-                return $"Button: {GetLabel(button.gameObject)}. {availability}";
+                return $"{GetLabel(button.gameObject)}";
             }
 
-            return $"Control: {GetLabel(selectable.gameObject)}. {availability}";
+            return $"{GetLabel(selectable.gameObject)}";
         }
 
         private static string DescribeMenuOption(MenuOptionHorizontal menuOption)
         {
             string label = GetObjectName(menuOption.gameObject);
             string value = GetText(menuOption.optionText?.gameObject) ?? "No option selected";
-            return $"Option: {label}. {value}. {GetAvailability(menuOption)}";
+            return $"{label}. {value}";
         }
 
         private static string GetAvailability(Selectable selectable)
