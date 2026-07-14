@@ -29,10 +29,20 @@ jobs:
                   dotnet build --no-restore -c Release
                   VERSION=${{ github.event.release.tag_name }}
                   cp "bin/Release/netstandard2.1/Silk Access.dll" "bin/Release/netstandard2.1/Silk-Access-${VERSION}.dll"
-
-            - name: Upload DLL to Release
+            - name: Package release
+              shell: bash
+              run: |
+                  VERSION=${{ github.event.release.tag_name }}
+                  mkdir package
+                  cp "bin/Release/netstandard2.1/Silk Access.dll" package/
+                  cp README.md package/
+                  # Optional
+                  cp LICENSE package/
+                  cd package
+                  zip -r "../Silk-Access-${VERSION}.zip" .
+            - name: Upload release assets
               uses: softprops/action-gh-release@v2
               with:
                   tag_name: ${{ github.event.release.tag_name }}
                   files: |
-                      bin/Release/netstandard2.1/Silk-Access-${{ github.event.release.tag_name }}.dll
+                      Silk-Access-${{ github.event.release.tag_name }}.zip
