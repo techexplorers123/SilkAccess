@@ -46,13 +46,25 @@ namespace SilkAccess.Features
 
         private static string Describe(GameObject element)
         {
+            MenuOptionHorizontal menuOption = element.GetComponentInParent<MenuOptionHorizontal>();
+            if (menuOption != null)
+            {
+                return DescribeMenuOption(menuOption);
+            }
+
+            MenuButton menuButton = element.GetComponentInParent<MenuButton>();
+            if (menuButton != null)
+            {
+                return $"Button: {GetLabel(menuButton.gameObject)}. {GetAvailability(menuButton)}";
+            }
+
             Selectable selectable = element.GetComponentInParent<Selectable>();
             if (selectable == null)
             {
                 return GetText(element) ?? element.name;
             }
 
-            string availability = selectable.IsInteractable() ? "Enabled" : "Disabled";
+            string availability = GetAvailability(selectable);
 
             Toggle toggle = selectable.GetComponent<Toggle>();
             if (toggle != null)
@@ -99,6 +111,18 @@ namespace SilkAccess.Features
             return $"Control: {GetLabel(selectable.gameObject)}. {availability}";
         }
 
+        private static string DescribeMenuOption(MenuOptionHorizontal menuOption)
+        {
+            string label = GetObjectName(menuOption.gameObject);
+            string value = GetText(menuOption.optionText?.gameObject) ?? "No option selected";
+            return $"Option: {label}. {value}. {GetAvailability(menuOption)}";
+        }
+
+        private static string GetAvailability(Selectable selectable)
+        {
+            return selectable.IsInteractable() ? "Enabled" : "Disabled";
+        }
+
         private static string GetSelectedOption<T>(System.Collections.Generic.IList<T> options, int index) where T : Dropdown.OptionData
         {
             return index >= 0 && index < options.Count && !string.IsNullOrEmpty(options[index].text)
@@ -120,7 +144,12 @@ namespace SilkAccess.Features
 
         private static string GetLabel(GameObject element)
         {
-            return GetText(element) ?? element.name;
+            return GetText(element) ?? GetObjectName(element);
+        }
+
+        private static string GetObjectName(GameObject element)
+        {
+            return element == null ? "Unnamed" : element.name.Replace('_', ' ');
         }
 
         private static string GetText(GameObject element)
