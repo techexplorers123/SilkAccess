@@ -1,17 +1,20 @@
-name: build
+name: Build
 
 on:
-    push:
-        tags:
-            - "v*.*.*"
+    release:
+        types: [published]
+
 permissions:
     contents: write
+
 jobs:
     build:
         runs-on: ubuntu-latest
 
         steps:
             - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.release.tag_name }}
 
             - name: Setup .NET
               uses: actions/setup-dotnet@v4
@@ -23,13 +26,13 @@ jobs:
 
             - name: Build
               run: |
-                  dotnet build --no-restore -c release
-                  VERSION=${GITHUB_REF_NAME}
-                  cp "bin/Release/netstandard2.1/Silk Access.dll" "bin/Release/netstandard2.1/Silk-Access-$VERSION.dll"
+                  dotnet build --no-restore -c Release
+                  VERSION=${{ github.event.release.tag_name }}
+                  cp "bin/Release/netstandard2.1/Silk Access.dll" "bin/Release/netstandard2.1/Silk-Access-${VERSION}.dll"
 
-            - name: Upload dll
+            - name: Upload DLL to Release
               uses: softprops/action-gh-release@v2
               with:
-                  files: "bin/Release/netstandard2.1/Silk-Access-${{ github.ref_name }}.dll"
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  tag_name: ${{ github.event.release.tag_name }}
+                  files: |
+                      bin/Release/netstandard2.1/Silk-Access-${{ github.event.release.tag_name }}.dll
