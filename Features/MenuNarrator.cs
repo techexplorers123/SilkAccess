@@ -17,7 +17,7 @@ namespace SilkAccess.Features
             {
                 GameObject selected = EventSystem.current?.currentSelectedGameObject;
                 return selected != null &&
-                    (selected.GetComponent<InputField>() != null || selected.GetComponent<TMP_InputField>() != null);
+                    (selected.GetComponentInParent<InputField>() != null || selected.GetComponentInParent<TMP_InputField>() != null);
             }
         }
 
@@ -46,49 +46,57 @@ namespace SilkAccess.Features
 
         private static string Describe(GameObject element)
         {
-            Toggle toggle = element.GetComponent<Toggle>();
+            Selectable selectable = element.GetComponentInParent<Selectable>();
+            if (selectable == null)
+            {
+                return GetText(element) ?? element.name;
+            }
+
+            string availability = selectable.IsInteractable() ? "Enabled" : "Disabled";
+
+            Toggle toggle = selectable.GetComponent<Toggle>();
             if (toggle != null)
             {
-                return $"Toggle: {GetLabel(toggle.gameObject)}. {(toggle.isOn ? "On" : "Off")}";
+                return $"Toggle: {GetLabel(toggle.gameObject)}. {(toggle.isOn ? "On" : "Off")}. {availability}";
             }
 
-            Slider slider = element.GetComponent<Slider>();
+            Slider slider = selectable.GetComponent<Slider>();
             if (slider != null)
             {
-                return $"Slider: {GetLabel(slider.gameObject)}. {slider.value:0.##}";
+                return $"Slider: {GetLabel(slider.gameObject)}. {slider.value:0.##}. {availability}";
             }
 
-            Dropdown dropdown = element.GetComponent<Dropdown>();
+            Dropdown dropdown = selectable.GetComponent<Dropdown>();
             if (dropdown != null)
             {
-                return $"Dropdown: {GetLabel(dropdown.gameObject)}. {GetSelectedOption(dropdown.options, dropdown.value)}";
+                return $"Dropdown: {GetLabel(dropdown.gameObject)}. {GetSelectedOption(dropdown.options, dropdown.value)}. {availability}";
             }
 
-            TMP_Dropdown tmpDropdown = element.GetComponent<TMP_Dropdown>();
+            TMP_Dropdown tmpDropdown = selectable.GetComponent<TMP_Dropdown>();
             if (tmpDropdown != null)
             {
-                return $"Dropdown: {GetLabel(tmpDropdown.gameObject)}. {GetSelectedOption(tmpDropdown.options, tmpDropdown.value)}";
+                return $"Dropdown: {GetLabel(tmpDropdown.gameObject)}. {GetSelectedOption(tmpDropdown.options, tmpDropdown.value)}. {availability}";
             }
 
-            InputField inputField = element.GetComponent<InputField>();
+            InputField inputField = selectable.GetComponent<InputField>();
             if (inputField != null)
             {
-                return $"Input field: {GetInputLabel(inputField.placeholder, inputField.gameObject)}. {inputField.text}";
+                return $"Input field: {GetInputLabel(inputField.placeholder, inputField.gameObject)}. {inputField.text}. {availability}";
             }
 
-            TMP_InputField tmpInputField = element.GetComponent<TMP_InputField>();
+            TMP_InputField tmpInputField = selectable.GetComponent<TMP_InputField>();
             if (tmpInputField != null)
             {
-                return $"Input field: {GetInputLabel(tmpInputField.placeholder, tmpInputField.gameObject)}. {tmpInputField.text}";
+                return $"Input field: {GetInputLabel(tmpInputField.placeholder, tmpInputField.gameObject)}. {tmpInputField.text}. {availability}";
             }
 
-            Button button = element.GetComponent<Button>();
+            Button button = selectable.GetComponent<Button>();
             if (button != null)
             {
-                return $"Button: {GetLabel(button.gameObject)}";
+                return $"Button: {GetLabel(button.gameObject)}. {availability}";
             }
 
-            return GetText(element) ?? element.name;
+            return $"Control: {GetLabel(selectable.gameObject)}. {availability}";
         }
 
         private static string GetSelectedOption<T>(System.Collections.Generic.IList<T> options, int index) where T : Dropdown.OptionData

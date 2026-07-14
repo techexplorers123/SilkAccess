@@ -18,6 +18,7 @@ namespace SilkAccess
         internal static new ManualLogSource Logger;
 
         private MenuNarrator menuNarrator;
+        private DialogueNarrator dialogueNarrator;
         private PlayerStatusAnnouncer playerStatusAnnouncer;
         private bool playerReady;
 
@@ -25,6 +26,7 @@ namespace SilkAccess
         {
             Logger = base.Logger;
             menuNarrator = new MenuNarrator();
+            dialogueNarrator = new DialogueNarrator();
             playerStatusAnnouncer = new PlayerStatusAnnouncer();
 
             Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} loaded.");
@@ -44,6 +46,7 @@ namespace SilkAccess
         private void Update()
         {
             menuNarrator.Update();
+            dialogueNarrator.Update();
 
             if (playerReady && !menuNarrator.IsTextInputFocused)
             {
