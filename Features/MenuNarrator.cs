@@ -64,51 +64,49 @@ namespace SilkAccess.Features
                 return GetText(element) ?? element.name;
             }
 
-            string availability = GetAvailability(selectable);
-
             Toggle toggle = selectable.GetComponent<Toggle>();
             if (toggle != null)
             {
-                return $"{GetLabel(toggle.gameObject)} switch {(toggle.isOn ? "On" : "Off")}";
+                return WithState($"{GetLabel(toggle.gameObject)} switch {(toggle.isOn ? "On" : "Off")}", selectable);
             }
 
             Slider slider = selectable.GetComponent<Slider>();
             if (slider != null)
             {
-                return $"{GetLabel(slider.gameObject)} slider {slider.value:0.##}";
+                return WithState($"{GetLabel(slider.gameObject)} slider {slider.value:0.##}", selectable);
             }
 
             Dropdown dropdown = selectable.GetComponent<Dropdown>();
             if (dropdown != null)
             {
-                return $"{GetLabel(dropdown.gameObject)}. Dropdown {GetSelectedOption(dropdown.options, dropdown.value)}";
+                return WithState($"{GetLabel(dropdown.gameObject)}. Dropdown {GetSelectedOption(dropdown.options, dropdown.value)}", selectable);
             }
 
             TMP_Dropdown tmpDropdown = selectable.GetComponent<TMP_Dropdown>();
             if (tmpDropdown != null)
             {
-                return $"Dropdown: {GetLabel(tmpDropdown.gameObject)}. {GetSelectedOption(tmpDropdown.options, tmpDropdown.value)}";
+                return WithState($"Dropdown: {GetLabel(tmpDropdown.gameObject)}. {GetSelectedOption(tmpDropdown.options, tmpDropdown.value)}", selectable);
             }
 
             InputField inputField = selectable.GetComponent<InputField>();
             if (inputField != null)
             {
-                return $"{GetInputLabel(inputField.placeholder, inputField.gameObject)}. editable, has value: {inputField.text}";
+                return WithState($"{GetInputLabel(inputField.placeholder, inputField.gameObject)}. editable, has value: {inputField.text}", selectable);
             }
 
             TMP_InputField tmpInputField = selectable.GetComponent<TMP_InputField>();
             if (tmpInputField != null)
             {
-                return $"{GetInputLabel(tmpInputField.placeholder, tmpInputField.gameObject)}. editable has value: {tmpInputField.text}";
+                return WithState($"{GetInputLabel(tmpInputField.placeholder, tmpInputField.gameObject)}. editable, has value: {tmpInputField.text}", selectable);
             }
 
             Button button = selectable.GetComponent<Button>();
             if (button != null)
             {
-                return $"{GetLabel(button.gameObject)}";
+                return WithState(GetLabel(button.gameObject), selectable);
             }
 
-            return $"{GetLabel(selectable.gameObject)}";
+            return WithState(GetLabel(selectable.gameObject), selectable);
         }
 
         private static string DescribeMenuOption(MenuOptionHorizontal menuOption)
@@ -118,9 +116,38 @@ namespace SilkAccess.Features
             return $"{label}. {value}";
         }
 
-        private static string GetAvailability(Selectable selectable)
+        private static string WithState(string announcement, Selectable selectable)
         {
-            return selectable.IsInteractable() ? "Enabled" : "Disabled";
+            string state = selectable.IsInteractable() ? string.Empty : ". Disabled";
+            return $"{announcement}{state}{GetPosition(selectable)}";
+        }
+
+        private static string GetPosition(Selectable selectable)
+        {
+            Transform parent = selectable.transform.parent;
+            if (parent == null)
+            {
+                return string.Empty;
+            }
+
+            var siblings = parent.GetComponentsInChildren<Selectable>(false);
+            int position = 0;
+            int count = 0;
+            foreach (Selectable sibling in siblings)
+            {
+                if (!sibling.gameObject.activeInHierarchy || !sibling.IsInteractable())
+                {
+                    continue;
+                }
+
+                count++;
+                if (sibling == selectable)
+                {
+                    position = count;
+                }
+            }
+
+            return count > 1 && position > 0 ? $". {position} of {count}" : string.Empty;
         }
 
         private static string GetSelectedOption<T>(System.Collections.Generic.IList<T> options, int index) where T : Dropdown.OptionData
@@ -159,14 +186,23 @@ namespace SilkAccess.Features
                 return null;
             }
 
-            Text text = element.GetComponentInChildren<Text>(true);
-            if (text != null && !string.IsNullOrWhiteSpace(text.text))
+            foreach (Text text in element.GetComponentsInChildren<Text>(true))
             {
-                return text.text;
+                if (text.gameObject.activeInHierarchy && !string.IsNullOrWhiteSpace(text.text))
+                {
+                    return text.text.Trim();
+                }
             }
 
-            TMP_Text tmpText = element.GetComponentInChildren<TMP_Text>(true);
-            return tmpText != null && !string.IsNullOrWhiteSpace(tmpText.text) ? tmpText.text : null;
+            foreach (TMP_Text tmpText in element.GetComponentsInChildren<TMP_Text>(true))
+            {
+                if (tmpText.gameObject.activeInHierarchy && !string.IsNullOrWhiteSpace(tmpText.text))
+                {
+                    return tmpText.text.Trim();
+                }
+            }
+
+            return null;
         }
     }
 }

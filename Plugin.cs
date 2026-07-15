@@ -1,6 +1,7 @@
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
+using HarmonyLib;
 using SilkAccess.Features;
 using SilkAccess.Services;
 using UnityEngine;
@@ -18,16 +19,17 @@ namespace SilkAccess
         internal static new ManualLogSource Logger;
 
         private MenuNarrator menuNarrator;
-        private DialogueNarrator dialogueNarrator;
         private PlayerStatusAnnouncer playerStatusAnnouncer;
+        private Harmony harmony;
         private bool playerReady;
 
         private void Awake()
         {
             Logger = base.Logger;
             menuNarrator = new MenuNarrator();
-            dialogueNarrator = new DialogueNarrator();
             playerStatusAnnouncer = new PlayerStatusAnnouncer();
+            harmony = new Harmony(PluginGuid);
+            harmony.PatchAll();
 
             Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} loaded.");
             StartCoroutine(WaitForPlayerData());
@@ -46,12 +48,16 @@ namespace SilkAccess
         private void Update()
         {
             menuNarrator.Update();
-            dialogueNarrator.Update();
 
             if (playerReady && !menuNarrator.IsTextInputFocused)
             {
                 playerStatusAnnouncer.HandleHotkeys();
             }
+        }
+
+        private void OnDestroy()
+        {
+            harmony?.UnpatchSelf();
         }
 
         private System.Collections.IEnumerator WaitForPlayerData()
